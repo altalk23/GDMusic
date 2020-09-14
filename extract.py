@@ -3,6 +3,7 @@ import sys
 import requests
 import time
 import re
+import pickle
 from shutil import copy
 from datetime import datetime
 from eyed3 import id3
@@ -20,7 +21,7 @@ homedir = os.path.expanduser("~")
 musicdir = os.path.join(cwdir, "music")
 if not os.path.exists(musicdir):
     os.mkdir(musicdir)
-
+    
 # Get the cache directory
 if sys.platform == "darwin":
     cachedir = os.path.join(homedir, "Library", "Caches")
@@ -36,9 +37,16 @@ bar = Bar('Extracting', fill='█', max=len(idlist))
 # Disable warnings
 eyed3.log.setLevel("ERROR")
 
-# Get the list of all previous music ids
-musiclist = [re.findall("\\[\\d+\\]", f)[0][1:-1] for f in os.listdir(musicdir) if f[-4:] == ".mp3"]
+# Get the previous music list path
+previouspath = os.path.join(cwdir, "previous.pickle")
 
+# Get the list of all previous music ids
+if os.path.exists(previouspath):
+    with open(previouspath, 'rb') as file:
+        musiclist = pickle.load(file)
+else:
+    musiclist = []
+    
 # Do for each id
 for id in idlist:
 
@@ -48,11 +56,9 @@ for id in idlist:
         # Set the url for requesting
         ngurl = f"url=newgrounds.com/audio/listen/{id}"
         apiurl = f"https://api.newgrounds.app/details.php?{ngurl}"
-        
         try:
             # Request the content
             content = requests.get(apiurl).json()
-            
             # Get metadata
             title = content["audio_details"][0]["name"]
             artist = content["audio_details"][0]["artist"]
@@ -87,9 +93,11 @@ for id in idlist:
             cachefile = os.path.join(cachedir, f"{id}.mp3")
             musicfile = os.path.join(musicdir, f"{title} [{id}].mp3")
             
-            # Copy the music file to the directory
-            copy(cachefile, musicfile)
-            
+            # Check if file already exists
+            if not os.path.exists(musicfile):
+                # Copy the music file to the directory
+                copy(cachefile, musicfile)
+                
             # Create mp3 tag
             tag = id3.tag.Tag()
             tag.parse(musicfile)
@@ -119,4 +127,14 @@ for id in idlist:
         
     bar.next()
     
+# Update previous music ID list
+try:
+    musiclist += [re.findall("\\[\\d+\\]", f)[0][1:-1] for f in os.listdir(musicdir) if f[:7] != "Unknown"]
+
+    # Write the list to the file
+    with open(previouspath, 'wb') as file:
+        pickle.dump(musiclist, file)
+except:
+    pass
+
 print(f"\nFinished, saved to {musicdir}")
