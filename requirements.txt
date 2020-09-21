@@ -1,0 +1,4 @@
+requests
+eyed3
+beautifulsoup4
+progress

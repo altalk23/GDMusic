@@ -2,10 +2,16 @@
 Extracting music from GD cache with added metadata
 
 ## How to use
-I still don't know how to compile Python programs, so do it yourself lol
+Type this in terminal to install the requirements  
+```
+pip3 install -r requirements.txt  
+```
 
-Libraries to install: 
-requests
-eyed3
-html2text
-progress
+Type this to run the program  
+```
+python3 app.py  
+```
+
+previous.pickle is used to store previous music ids.  
+
+All of the musics appear in the music folder.  
