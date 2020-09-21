@@ -34,6 +34,7 @@ def setup():
     previouspath = os.path.join(cwdir, "previous.pickle")
 
     # Get the list of all previous music ids
+    global prevlist
     if os.path.exists(previouspath):
         with open(previouspath, 'rb') as file:
             prevlist = pickle.load(file)
@@ -169,15 +170,12 @@ def updateSongMetadata(id):
 def finish():
     # Update previous music ID list
     global musiclist
-    musiclist += [
-        re.findall("\\[\\d+\\]", f)[0][1:-1]
-        for f in os.listdir(musicdir)
-        if f[-4:] == ".mp3"
-    ]
+    global prevlist
+    prevlist += musiclist
 
     # Write the list to the file
     with open(previouspath, 'wb') as file:
-        pickle.dump(musiclist, file)
+        pickle.dump(prevlist, file)
 
 setup()
 
