@@ -48,10 +48,10 @@ if os.path.exists(previouspath):
 else:
     musiclist = []
 
-defaultimageurl = "https://img.ngfiles.com/defaults/icon-audio.png"
+defaultimageurl = "img.ngfiles.com/defaults/icon-audio.png"
 
 def fuck():
-    global title, artist, comment, genre, releasedate, imageurl, contact, ngurl, tag
+    global title, artist, comment, genre, releasedate, imageurl, contact, ngurl
 
     # Set the url for requesting
     ngurl = f"https://newgrounds.com/audio/listen/{id}"
@@ -84,8 +84,7 @@ def fuck():
         fuck()
 
     except:
-        #print( sys.exc_info()[0])
-        #print("unknown")
+        print( sys.exc_info()[0])
         # The music is deleted or removed
         contact = False
 
@@ -112,11 +111,8 @@ def fuck2():
     global imageurl, imagedata, tag
     try:
         # Get image data
-        print(imageurl)
         response = requests.get(imageurl)
         imagedata = response.content
-        if "404 Not Found" in imagedata:
-            raise Exception
 
         # Set image data
         tag.images.set(type_=3, img_data=imagedata, mime_type="image/png")
@@ -129,8 +125,6 @@ def fuck2():
         fuck2()
     except:
         imageurl = defaultimageurl
-        #print( sys.exc_info()[0])
-        #print("def")
         fuck2()
 
 # Do for each id
@@ -138,7 +132,6 @@ for id in idlist:
 
     # Check if already exists
     if id not in musiclist:
-        print(id)
 
         fuck()
 
