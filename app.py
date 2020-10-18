@@ -99,7 +99,7 @@ def getSongMetadata(id):
         # Get metadata
         title = soup.title.text
         artist = soup.find("div", {"class": "item-details-main"}).contents[1].contents[1].text
-        comment = soup.find(id="author_comments").text
+        comment = soup.find(id="author_comments").text if soup.find(id="author_comments") is not None else ""
         genre = soup.find(attrs={"data-genre-for": True}).text
         year = soup.find(id="sidestats").contents[5].contents[3].text[-4:]
         imageurl = soup.find(property="og:image")["content"]
